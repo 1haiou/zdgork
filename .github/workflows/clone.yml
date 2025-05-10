@@ -21,10 +21,10 @@ jobs:
           cd MobileGlues-release
 
           # 配置 Gitee 远程（SSH 方式，避免密码泄露）
-          git remote add gitee git@gitee.com:haiou/MobileGlues-release.git
+          git remote add gitee git@gitee.com:hai_ou1/MobileGlues-release.git
 
           # 配置提交身份（可选，Gitee 可不填）
-          git config user.name "haiou"
+          git config user.name "hai_ou1"
           git config user.email "a13854250594a@qq.com"
 
           # 强制推送所有分支（首次需 -f，后续正常推送）
@@ -37,7 +37,7 @@ jobs:
           git clone --depth 1 https://github.com/FCL-Team/FoldCraftLauncher.git
           cd FoldCraftLauncher
 
-          git remote add gitee git@gitee.com:haiou/FoldCraftLauncher.git
+          git remote add gitee git@gitee.com:hai_ou1/FoldCraftLauncher.git
           git config user.name "a13854250594a@qq.com"
           git config user.email "a13854250594a@qq.com"
 
