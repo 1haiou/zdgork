@@ -3,43 +3,36 @@ on:
   push:
     branches:
       - main  # 触发分支，与你源仓库的主分支一致
-
 jobs:
   clone-and-push:
     runs-on: ubuntu-latest
     steps:
-      # 检出当前仓库（非必须，但若需动态获取仓库名则需要）
-      - name: Checkout Source Repo
-        uses: actions/checkout@v4
+      # 设置 Gitee 的 SSH 私钥
+      - name: Set up SSH Key for Gitee
+        uses: ssh-actions/ssh-key-action@v2
         with:
-          persist-credentials: false  # 移除 GitHub 凭证，避免冲突
+          key: ${{ secrets.GITEE_PRIVATE_KEY }}
+          known_hosts: |
+            gitee.com ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNQAAAAIbmlzdHAyNQAAABBBFSM65nuL2l7WmsnCkQ17nLmHm38G6/8B8RQ3W2z+6V0R3sD7V7yFqPw59Nk6lO0zW/5KQp6s7r42h3C07X0Rg=
 
-      # 同步 MobileGlues-release
+      # 同步 MobileGlues-release 仓库
       - name: Sync MobileGlues-release to Gitee
         run: |
           git clone --depth 1 https://github.com/MobileGL-Dev/MobileGlues-release.git
           cd MobileGlues-release
-
-          # 配置 Gitee 远程（SSH 方式，避免密码泄露）
-          git remote add gitee git@gitee.com:hai_ou1/MobileGlues-release.git
-
-          # 配置提交身份（可选，Gitee 可不填）
+          git remote add gitee git@gitee.com/#你的Gitee用户名#/MobileGlues-release.git
           git config user.name "hai_ou1"
           git config user.email "a13854250594a@qq.com"
-
-          # 强制推送所有分支（首次需 -f，后续正常推送）
           git push -f gitee --all
-          git push -f gitee --tags  # 同步标签（可选）
+          git push -f gitee --tags
 
-      # 同步 FoldCraftLauncher（重复步骤，仅修改仓库名）
+      # 同步 FoldCraftLauncher 仓库
       - name: Sync FoldCraftLauncher to Gitee
         run: |
           git clone --depth 1 https://github.com/FCL-Team/FoldCraftLauncher.git
           cd FoldCraftLauncher
-
-          git remote add gitee git@gitee.com:hai_ou1/FoldCraftLauncher.git
-          git config user.name "a13854250594a@qq.com"
+          git remote add gitee git@gitee.com/#你的Gitee用户名#/FoldCraftLauncher.git
+          git config user.name "hai_ou1"
           git config user.email "a13854250594a@qq.com"
-
           git push -f gitee --all
           git push -f gitee --tags
