@@ -20,7 +20,7 @@ jobs:
         run: |
           git clone --depth 1 https://github.com/MobileGL-Dev/MobileGlues-release.git
           cd MobileGlues-release
-          git remote add gitee git@gitee.com/#你的Gitee用户名#/MobileGlues-release.git
+          git remote add gitee git@gitee.com/hai_ou1/MobileGlues-release.git
           git config user.name "hai_ou1"
           git config user.email "a13854250594a@qq.com"
           git push -f gitee --all
@@ -31,7 +31,7 @@ jobs:
         run: |
           git clone --depth 1 https://github.com/FCL-Team/FoldCraftLauncher.git
           cd FoldCraftLauncher
-          git remote add gitee git@gitee.com/#你的Gitee用户名#/FoldCraftLauncher.git
+          git remote add gitee git@gitee.com/hai_ou1/FoldCraftLauncher.git
           git config user.name "hai_ou1"
           git config user.email "a13854250594a@qq.com"
           git push -f gitee --all
