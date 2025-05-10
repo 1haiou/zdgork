@@ -10,7 +10,7 @@ jobs:
     steps:
       # 1. 设置 Gitee 的 SSH 私钥（关键安全步骤）
       - name: Set up SSH Key for Gitee
-        uses: ssh-actions/ssh-key-action@v2  # 使用稳定的 SSH 密钥管理动作
+        uses: webfactory/ssh-agent@v0  # 使用稳定的 SSH 密钥管理动作
         with:
           key: ${{ secrets.GITEE_PRIVATE_KEY }}  # 填写 Gitee 私钥（存储在 GitHub 机密中）
           known_hosts: |  # 手动添加 Gitee 主机公钥（避免首次连接时的安全警告）
