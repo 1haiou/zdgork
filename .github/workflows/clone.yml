@@ -1,19 +1,45 @@
-name: Clone Repositories
-# 触发条件设置为push到main分支时触发，你也可以根据实际需求修改分支名称
+name: Sync Repos to Gitee
 on:
   push:
     branches:
-      - main 
+      - main  # 触发分支，与你源仓库的主分支一致
+
 jobs:
-  clone-repos:
+  clone-and-push:
     runs-on: ubuntu-latest
     steps:
-      # 这里添加了获取仓库代码的步骤，是后续操作的基础
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Clone MobileGlues-release
+      # 检出当前仓库（非必须，但若需动态获取仓库名则需要）
+      - name: Checkout Source Repo
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false  # 移除 GitHub 凭证，避免冲突
+
+      # 同步 MobileGlues-release
+      - name: Sync MobileGlues-release to Gitee
         run: |
-          git clone https://github.com/MobileGL-Dev/MobileGlues-release.git
-      - name: Clone FoldCraftLauncher
+          git clone --depth 1 https://github.com/MobileGL-Dev/MobileGlues-release.git
+          cd MobileGlues-release
+
+          # 配置 Gitee 远程（SSH 方式，避免密码泄露）
+          git remote add gitee git@gitee.com:haiou/MobileGlues-release.git
+
+          # 配置提交身份（可选，Gitee 可不填）
+          git config user.name "haiou"
+          git config user.email "a13854250594a@qq.com"
+
+          # 强制推送所有分支（首次需 -f，后续正常推送）
+          git push -f gitee --all
+          git push -f gitee --tags  # 同步标签（可选）
+
+      # 同步 FoldCraftLauncher（重复步骤，仅修改仓库名）
+      - name: Sync FoldCraftLauncher to Gitee
         run: |
-          git clone https://github.com/FCL-Team/FoldCraftLauncher.git
+          git clone --depth 1 https://github.com/FCL-Team/FoldCraftLauncher.git
+          cd FoldCraftLauncher
+
+          git remote add gitee git@gitee.com:haiou/FoldCraftLauncher.git
+          git config user.name "a13854250594a@qq.com"
+          git config user.email "a13854250594a@qq.com"
+
+          git push -f gitee --all
+          git push -f gitee --tags
