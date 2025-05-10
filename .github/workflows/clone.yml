@@ -2,37 +2,47 @@ name: Sync Repos to Gitee
 on:
   push:
     branches:
-      - main  # 触发分支，与你源仓库的主分支一致
+      - main  # 触发分支，与源仓库主分支一致
+
 jobs:
   clone-and-push:
     runs-on: ubuntu-latest
     steps:
-      # 设置 Gitee 的 SSH 私钥
+      # 1. 设置 Gitee 的 SSH 私钥（关键安全步骤）
       - name: Set up SSH Key for Gitee
-        uses: ssh-actions/ssh-key-action@v2
+        uses: ssh-actions/ssh-key-action@v2  # 使用稳定的 SSH 密钥管理动作
         with:
-          key: ${{ secrets.GITEE_PRIVATE_KEY }}
-          known_hosts: |
+          key: ${{ secrets.GITEE_PRIVATE_KEY }}  # 填写 Gitee 私钥（存储在 GitHub 机密中）
+          known_hosts: |  # 手动添加 Gitee 主机公钥（避免首次连接时的安全警告）
             gitee.com ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNQAAAAIbmlzdHAyNQAAABBBFSM65nuL2l7WmsnCkQ17nLmHm38G6/8B8RQ3W2z+6V0R3sD7V7yFqPw59Nk6lO0zW/5KQp6s7r42h3C07X0Rg=
 
-      # 同步 MobileGlues-release 仓库
+      # 2. 同步 MobileGlues-release 仓库（示例仓库 1）
       - name: Sync MobileGlues-release to Gitee
         run: |
+          # 克隆 GitHub 源仓库（--depth 1 仅获取最新提交，加速同步）
           git clone --depth 1 https://github.com/MobileGL-Dev/MobileGlues-release.git
           cd MobileGlues-release
+
+          # 添加 Gitee 远程仓库（使用 SSH 协议，确保仓库已在 Gitee 提前创建）
           git remote add gitee git@gitee.com:hai_ou1/MobileGlues-release.git
-          git config user.name "hai_ou1"
-          git config user.email "a13854250594a@qq.com"
+
+          # 配置提交身份（Gitee 可能需要，建议保留）
+          git config user.name "hai_ou1"  # 填写您的 Gitee 用户名
+          git config user.email "a13854250594a@qq.com"  # 填写您的 Gitee 注册邮箱
+
+          # 强制推送所有分支和标签（首次同步需 -f，后续可省略，但单人维护时建议保留）
           git push -f gitee --all
           git push -f gitee --tags
 
-      # 同步 FoldCraftLauncher 仓库
+      # 3. 同步 FoldCraftLauncher 仓库（示例仓库 2，重复步骤可优化为循环）
       - name: Sync FoldCraftLauncher to Gitee
         run: |
           git clone --depth 1 https://github.com/FCL-Team/FoldCraftLauncher.git
           cd FoldCraftLauncher
-          git remote add gitee git@gitee.com:hai_ou1/FoldCraftLauncher.git
-          git config user.name "hai_ou1"
-          git config user.email "a13854250594a@qq.com"
+
+          git remote add gitee git@gitee.com:hai_ou1/FoldCraftLauncher.git  # 检查仓库名是否正确
+          git config user.name "hai_ou1"  # 与上方保持一致
+          git config user.email "a13854250594a@qq.com"  # 与上方保持一致
+
           git push -f gitee --all
           git push -f gitee --tags
