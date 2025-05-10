@@ -1,17 +1,19 @@
 name: Clone Repositories
+# 触发条件设置为push到main分支时触发，你也可以根据实际需求修改分支名称
 on:
   push:
     branches:
-      - main # 可按需修改触发分支
+      - main 
 jobs:
   clone-repos:
     runs-on: ubuntu-latest
     steps:
-      - name: Clone MobileGlues-release
+      # 这里添加了获取仓库代码的步骤，是后续操作的基础
+      - name: Checkout
         uses: actions/checkout@v3
+      - name: Clone MobileGlues-release
         run: |
           git clone https://github.com/MobileGL-Dev/MobileGlues-release.git
       - name: Clone FoldCraftLauncher
-        uses: actions/checkout@v3
         run: |
           git clone https://github.com/FCL-Team/FoldCraftLauncher.git
