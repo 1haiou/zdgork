@@ -1,0 +1,17 @@
+name: Clone Repositories
+on:
+  push:
+    branches:
+      - main # 可按需修改触发分支
+jobs:
+  clone-repos:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone MobileGlues-release
+        uses: actions/checkout@v3
+        run: |
+          git clone https://github.com/MobileGL-Dev/MobileGlues-release.git
+      - name: Clone FoldCraftLauncher
+        uses: actions/checkout@v3
+        run: |
+          git clone https://github.com/FCL-Team/FoldCraftLauncher.git
