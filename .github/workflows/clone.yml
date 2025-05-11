@@ -1,14 +1,64 @@
-name: Test Gitee Access
-on: [push]
+name: Sync Repositories to Gitee
+
+on:
+  # 监控源仓库的所有推送事件
+  push:
+    paths-ignore:
+      - README.md
+      - README_EN.md
+      - README_RU.md
+      - README_CHT.md
+      - README_CN.md
+      - README_JP.md
+  # 定期同步，每24小时执行一次
+  schedule:
+    - cron: '0 0 * * *'
 
 jobs:
-  test-gitee-clone:
+  sync-repositories:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Clone Gitee Repository
-        run: |
-          # 构造带令牌的 HTTPS 仓库 URL（格式：https://<token>@gitee.com/<owner>/<repo>.git）
-          repo_url="https://${{ secrets.GITEE_TOKEN }}@gitee.com/your-gitee-username/your-repo-name.git"
-          git clone $repo_url
-          # 或使用更安全的 --config 参数（避免令牌出现在命令历史）
-          # git clone https://x-access-token:${{ secrets.GITEE_TOKEN }}@gitee.com/your-gitee-username/your-repo-name.git
+      # 检出代码到临时目录
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 设置SSH私钥
+      - name: Set up SSH private key
+        uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: ${{ secrets.GITEE_PRIVATE_KEY }}
+
+      # 同步FoldCraftLauncher仓库
+      - name: Sync FoldCraftLauncher Repository
+        uses: yjc1995/git-clone-repo@v1.3.1
+        with:
+          remote: origin
+          source: https://github.com/FCL-Team/FoldCraftLauncher.git
+          destination: FoldCraftLauncher
+          token: ${{ secrets.GITEE_TOKEN }}
+          user: ${{ secrets.GITEE_USER }}
+          email: a13854250594a@qq.com
+          gitee: true
+          tags: true
+          releases: true
+          force: true
+        env:
+          GIT_SSH_COMMAND: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+
+      # 同步MobileGlues-release仓库
+      - name: Sync MobileGlues-release Repository
+        uses: yjc1995/git-clone-repo@v1.3.1
+        with:
+          remote: origin
+          source: https://github.com/MobileGL-Dev/MobileGlues-release.git
+          destination: MobileGlues-release
+          token: ${{ secrets.GITEE_TOKEN }}
+          user: ${{ secrets.GITEE_USER }}
+          email: a13854250594a@qq.com
+          gitee: true
+          tags: true
+          releases: true
+          force: true
+        env:
+          GIT_SSH_COMMAND: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
