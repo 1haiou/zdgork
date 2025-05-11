@@ -17,10 +17,7 @@ jobs:
       - name: Set config file permissions
         run: chmod 600 ~/.ssh/config
       - name: Add GitHub host key to known_hosts
-        run:
-          - mkdir -p ~/.ssh
-          - ssh-keyscan github.com >> ~/.ssh/known_hosts
-          - chmod 600 ~/.ssh/known_hosts
+        run: mkdir -p ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts && chmod 600 ~/.ssh/known_hosts
       - name: Checkout FoldCraftLauncher
         uses: actions/checkout@v3
         with:
@@ -28,31 +25,13 @@ jobs:
           ref: main
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Configure Git for FoldCraftLauncher
-        run:
-          - git config --global user.email "a13854250594a@qq.com"
-          - git config --global user.name "hai_ou1"
+        run: git config --global user.email "a13854250594a@qq.com" && git config --global user.name "hai_ou1"
       - name: Add SSH Key for FoldCraftLauncher
         uses: webfactory/ssh-agent@v0.9.1
         with:
           ssh-private-key: ${{ secrets.GITEE_PRIVATE_KEY }}
       - name: Clone and Overwrite to Gitee for FoldCraftLauncher
-        run:
-          - echo "开始克隆仓库"
-          - git clone --mirror git@github.com:FCL-Team/FoldCraftLauncher.git
-          - if [ -d FoldCraftLauncher.git ]; then
-              echo "FoldCraftLauncher.git 仓库克隆成功"
-            else
-              echo "FoldCraftLauncher.git 仓库克隆失败"
-            fi
-          - cd FoldCraftLauncher.git
-          - echo "已进入克隆后的仓库目录，准备推送到 Gitee"
-          - git push --mirror --force git@gitee.com:hai_ou1/FoldCraftLauncher.git
-          - push_result=$?
-          - if [ $push_result -eq 0 ]; then
-              echo "仓库推送成功"
-            else
-              echo "仓库推送失败"
-            fi
+        run: echo "开始克隆仓库" && git clone --mirror git@github.com:FCL-Team/FoldCraftLauncher.git && if [ -d FoldCraftLauncher.git ]; then echo "FoldCraftLauncher.git 仓库克隆成功"; else echo "FoldCraftLauncher.git 仓库克隆失败"; fi && cd FoldCraftLauncher.git && echo "已进入克隆后的仓库目录，准备推送到 Gitee" && git push --mirror --force git@gitee.com:hai_ou1/FoldCraftLauncher.git && push_result=$? && if [ $push_result -eq 0 ]; then echo "仓库推送成功"; else echo "仓库推送失败"; fi
 
   mirror-MobileGlues-release:
     runs-on: ubuntu-latest
@@ -64,10 +43,7 @@ jobs:
       - name: Set config file permissions
         run: chmod 600 ~/.ssh/config
       - name: Add GitHub host key to known_hosts
-        run:
-          - mkdir -p ~/.ssh
-          - ssh-keyscan github.com >> ~/.ssh/known_hosts
-          - chmod 600 ~/.ssh/known_hosts
+        run: mkdir -p ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts && chmod 600 ~/.ssh/known_hosts
       - name: Checkout MobileGlues-release
         uses: actions/checkout@v3
         with:
@@ -75,28 +51,10 @@ jobs:
           ref: main
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Configure Git for MobileGlues-release
-        run:
-          - git config --global user.email "a13854250594a@qq.com"
-          - git config --global user.name "hai_ou1"
+        run: git config --global user.email "a13854250594a@qq.com" && git config --global user.name "hai_ou1"
       - name: Add SSH Key for MobileGlues-release
         uses: webfactory/ssh-agent@v0.9.1
         with:
           ssh-private-key: ${{ secrets.GITEE_PRIVATE_KEY }}
       - name: Clone and Overwrite to Gitee for MobileGlues-release
-        run:
-          - echo "开始克隆仓库"
-          - git clone --mirror git@github.com:MobileGL-Dev/MobileGlues-release.git
-          - if [ -d MobileGlues-release.git ]; then
-              echo "MobileGlues-release.git 仓库克隆成功"
-            else
-              echo "MobileGlues-release.git 仓库克隆失败"
-            fi
-          - cd MobileGlues-release.git
-          - echo "已进入克隆后的仓库目录，准备推送到 Gitee"
-          - git push --mirror --force git@gitee.com:hai_ou1/MobileGlues-release.git
-          - push_result=$?
-          - if [ $push_result -eq 0 ]; then
-              echo "仓库推送成功"
-            else
-              echo "仓库推送失败"
-            fi
+        run: echo "开始克隆仓库" && git clone --mirror git@github.com:MobileGL-Dev/MobileGlues-release.git && if [ -d MobileGlues-release.git ]; then echo "MobileGlues-release.git 仓库克隆成功"; else echo "MobileGlues-release.git 仓库克隆失败"; fi && cd MobileGlues-release.git && echo "已进入克隆后的仓库目录，准备推送到 Gitee" && git push --mirror --force git@gitee.com:hai_ou1/MobileGlues-release.git && push_result=$? && if [ $push_result -eq 0 ]; then echo "仓库推送成功"; else echo "仓库推送失败"; fi
