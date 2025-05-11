@@ -13,7 +13,7 @@ jobs:
       - name: Create .ssh directory if not exists
         run: mkdir -p ~/.ssh
       - name: Test network connection to Gitee
-        run: ping -c 4 gitee.com
+        run: ping gitee.com
       - name: Add Gitee host key to known_hosts
         run: |
           echo "ssh-keyscan output: $(ssh-keyscan -t rsa gitee.com)"
