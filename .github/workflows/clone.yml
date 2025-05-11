@@ -44,7 +44,7 @@ jobs:
           git config --global user.email "a13854250594a@qq.com"
           git config --global user.name "hai_ou1"
       - name: Add SSH Key for MobileGlues-release
-        uses: webfactory/ssh-agent@v0.5.5
+        uses: webfactory/ssh-agent@v0.9.1
         with:
           ssh-private-key: ${{ secrets.GITEE_PRIVATE_KEY }}
       - name: Clone and Overwrite to Gitee for MobileGlues-release
