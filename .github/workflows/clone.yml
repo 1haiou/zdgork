@@ -58,3 +58,13 @@ jobs:
           ssh-private-key: ${{ secrets.GITEE_PRIVATE_KEY }}
       - name: Clone and Overwrite to Gitee for MobileGlues-release
         run: echo "开始克隆仓库" && git clone --mirror git@github.com:MobileGL-Dev/MobileGlues-release.git && if [ -d MobileGlues-release.git ]; then echo "MobileGlues-release.git 仓库克隆成功"; else echo "MobileGlues-release.git 仓库克隆失败"; fi && cd MobileGlues-release.git && echo "已进入克隆后的仓库目录，准备推送到 Gitee" && git push --mirror --force git@gitee.com:hai_ou1/MobileGlues-release.git && push_result=$? && if [ $push_result -eq 0 ]; then echo "仓库推送成功"; else echo "仓库推送失败"; fi
+
+  test-ssh-key:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test SSH Connection to Gitee
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GITEE_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa_gitee
+          chmod 600 ~/.ssh/id_rsa_gitee
+          ssh -T git@gitee.com
