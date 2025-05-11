@@ -47,9 +47,6 @@ jobs:
       - name: Checkout MobileGlues-release
         uses: actions/checkout@v3
         with:
-          src: github/1haiou
-          dst: gitee/hai_ou1
-          key: ${{secrets.GITEE_PRIVATE_KEY}}
           repository: MobileGL-Dev/MobileGlues-release
           ref: main
           token: ${{ secrets.GITHUB_TOKEN }}
