@@ -10,6 +10,12 @@ jobs:
   mirror-FoldCraftLauncher:
     runs-on: ubuntu-latest
     steps:
+      - name: Create .ssh directory
+        run: mkdir -p ~/.ssh
+      - name: Create config file
+        run: echo "Host github.com\nHostname ssh.github.com\nPort 443" > ~/.ssh/config
+      - name: Set config file permissions
+        run: chmod 600 ~/.ssh/config
       - name: Checkout FoldCraftLauncher
         uses: actions/checkout@v3
         with:
@@ -24,18 +30,21 @@ jobs:
         uses: webfactory/ssh-agent@v0.9.1
         with:
           ssh-private-key: ${{ secrets.GITEE_PRIVATE_KEY }}
-      - name: Add GitHub Host Key for FoldCraftLauncher
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
       - name: Clone and Overwrite to Gitee for FoldCraftLauncher
         run: |
           git clone --mirror git@github.com:FCL-Team/FoldCraftLauncher.git
           cd FoldCraftLauncher.git
           git push --mirror --force git@gitee.com:hai_ou1/FoldCraftLauncher.git
+
   mirror-MobileGlues-release:
     runs-on: ubuntu-latest
     steps:
+      - name: Create .ssh directory
+        run: mkdir -p ~/.ssh
+      - name: Create config file
+        run: echo "Host github.com\nHostname ssh.github.com\nPort 443" > ~/.ssh/config
+      - name: Set config file permissions
+        run: chmod 600 ~/.ssh/config
       - name: Checkout MobileGlues-release
         uses: actions/checkout@v3
         with:
@@ -50,10 +59,6 @@ jobs:
         uses: webfactory/ssh-agent@v0.9.1
         with:
           ssh-private-key: ${{ secrets.GITEE_PRIVATE_KEY }}
-      - name: Add GitHub Host Key for MobileGlues-release
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
       - name: Clone and Overwrite to Gitee for MobileGlues-release
         run: |
           git clone --mirror git@github.com:MobileGL-Dev/MobileGlues-release.git
