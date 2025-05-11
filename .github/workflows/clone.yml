@@ -7,8 +7,37 @@ on:
   workflow_dispatch:
 
 jobs:
+  test-ssh-key:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create .ssh directory if not exists
+        run: mkdir -p ~/.ssh
+      - name: Test network connection to Gitee
+        run: ping -c 4 gitee.com
+      - name: Add Gitee host key to known_hosts
+        run: |
+          echo "ssh-keyscan output: $(ssh-keyscan -t rsa gitee.com)"
+          ssh-keyscan -t rsa gitee.com >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+          if [ -s ~/.ssh/known_hosts ]; then
+            echo "Gitee host key added successfully. Known_hosts content: $(cat ~/.ssh/known_hosts)"
+          else
+            echo "Failed to add Gitee host key. known_hosts file is empty or does not exist."
+          fi
+      - name: Test SSH Connection to Gitee
+        run: |
+          echo "${{ secrets.GITEE_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa_gitee
+          chmod 600 ~/.ssh/id_rsa_gitee
+          if [ -s ~/.ssh/id_rsa_gitee ]; then
+            echo "SSH private key written successfully. Private key content: $(cat ~/.ssh/id_rsa_gitee)"
+          else
+            echo "Failed to write SSH private key. Private key file is empty or does not exist."
+          fi
+          ssh -T git@gitee.com
+
   mirror-FoldCraftLauncher:
     runs-on: ubuntu-latest
+    needs: test-ssh-key  # 依赖 test-ssh-key 作业，确保 SSH 连接测试通过后再执行此作业
     steps:
       - name: Create .ssh directory
         run: mkdir -p ~/.ssh
@@ -35,6 +64,7 @@ jobs:
 
   mirror-MobileGlues-release:
     runs-on: ubuntu-latest
+    needs: test-ssh-key  # 依赖 test-ssh-key 作业，确保 SSH 连接测试通过后再执行此作业
     steps:
       - name: Create .ssh directory
         run: mkdir -p ~/.ssh
@@ -58,27 +88,3 @@ jobs:
           ssh-private-key: ${{ secrets.GITEE_PRIVATE_KEY }}
       - name: Clone and Overwrite to Gitee for MobileGlues-release
         run: echo "开始克隆仓库" && git clone --mirror git@github.com:MobileGL-Dev/MobileGlues-release.git && if [ -d MobileGlues-release.git ]; then echo "MobileGlues-release.git 仓库克隆成功"; else echo "MobileGlues-release.git 仓库克隆失败"; fi && cd MobileGlues-release.git && echo "已进入克隆后的仓库目录，准备推送到 Gitee" && git push --mirror --force git@gitee.com:hai_ou1/MobileGlues-release.git && push_result=$? && if [ $push_result -eq 0 ]; then echo "仓库推送成功"; else echo "仓库推送失败"; fi
-
-  test-ssh-key:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Create .ssh directory if not exists
-        run: mkdir -p ~/.ssh
-      - name: Add Gitee host key to known_hosts
-        run: |
-          ssh-keyscan -t rsa -H gitee.com >> ~/.ssh/known_hosts
-          if [ -s ~/.ssh/known_hosts ]; then
-            echo "Gitee host key added successfully. Known_hosts content: $(cat ~/.ssh/known_hosts)"
-          else
-            echo "Failed to add Gitee host key. known_hosts file is empty or does not exist."
-          fi
-      - name: Test SSH Connection to Gitee
-        run: |
-          echo "${{ secrets.GITEE_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa_gitee
-          chmod 600 ~/.ssh/id_rsa_gitee
-          if [ -s ~/.ssh/id_rsa_gitee ]; then
-            echo "SSH private key written successfully. Private key content: $(cat ~/.ssh/id_rsa_gitee)"
-          else
-            echo "Failed to write SSH private key. Private key file is empty or does not exist."
-          fi
-          ssh -T git@gitee.com
