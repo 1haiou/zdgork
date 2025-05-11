@@ -1,87 +1,51 @@
-name: Mirror Repositories to Gitee
+name: Sync Repositories to Gitee
 
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:
+    paths-ignore:
+      - README.md
+      - README_EN.md
+      - README_RU.md
+      - README_CHT.md
+      - README_CN.md
+      - README_JP.md
+  schedule:
+    - cron: '0 0 * * *' # 每天凌晨执行一次，可根据需求调整
 
 jobs:
-  mirror-FoldCraftLauncher:
+  sync-repositories:
     runs-on: ubuntu-latest
-    steps:
-      - name: Create .ssh directory
-        run: mkdir -p ~/.ssh
-      - name: Add GitHub host key
-        run: ssh-keyscan github.com >> ~/.ssh/known_hosts
-      - name: Add Gitee host key
-        run: ssh-keyscan gitee.com >> ~/.ssh/known_hosts
-      - name: Configure Git user
-        run: git config --global user.email "a13854250594a@qq.com" && git config --global user.name "hai_ou1"
-      - name: Add SSH Key for FoldCraftLauncher
-        uses: webfactory/ssh-agent@v0.9.1
-        with:
-          ssh-private-key: ${{ secrets.GITEE_PRIVATE_KEY }}
-      - name: Checkout FoldCraftLauncher
-        uses: actions/checkout@v3
-        with:
-          repository: FCL-Team/FoldCraftLauncher
-          ref: main
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Clone and Overwrite to Gitee for FoldCraftLauncher
-        run: |
-          git clone --mirror git@github.com:FCL-Team/FoldCraftLauncher.git
-          cd FoldCraftLauncher.git
-          git push --mirror --force git@gitee.com:hai_ou1/FoldCraftLauncher.git
-          if [ $? -eq 0 ]; then
-            echo "仓库推送成功"
-          else
-            echo "仓库推送失败"
-          fi
 
-  mirror-MobileGlues-release:
-    runs-on: ubuntu-latest
     steps:
-      - name: Create .ssh directory
-        run: mkdir -p ~/.ssh
-      - name: Add GitHub host key
-        run: ssh-keyscan github.com >> ~/.ssh/known_hosts
-      - name: Add Gitee host key
-        run: ssh-keyscan gitee.com >> ~/.ssh/known_hosts
-      - name: Configure Git user
-        run: git config --global user.email "a13854250594a@qq.com" && git config --global user.name "hai_ou1"
-      - name: Add SSH Key for MobileGlues-release
-        uses: webfactory/ssh-agent@v0.9.1
-        with:
-          ssh-private-key: ${{ secrets.GITEE_PRIVATE_KEY }}
-      - name: Checkout MobileGlues-release
+      - name: Checkout code
         uses: actions/checkout@v3
-        with:
-          repository: MobileGL-Dev/MobileGlues-release
-          ref: main
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Clone and Overwrite to Gitee for MobileGlues-release
-        run: |
-          git clone --mirror git@github.com:MobileGL-Dev/MobileGlues-release.git
-          cd MobileGlues-release.git
-          git push --mirror --force git@gitee.com:hai_ou1/MobileGlues-release.git
-          push_result=$?
-          if [ $push_result -eq 0 ]; then
-            echo "仓库推送成功"
-          else
-            echo "仓库推送失败"
-          fi
 
-  test-ssh-key:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Create .ssh directory if not exists
-        run: mkdir -p ~/.ssh
-      - name: Add Gitee host key to known_hosts
-        run: ssh-keyscan -t rsa -H gitee.com >> ~/.ssh/known_hosts
-      - name: Add SSH Key for testing
-        uses: webfactory/ssh-agent@v0.9.1
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.5.6
         with:
-          ssh-private-key: ${{ secrets.GITEE_PRIVATE_KEY }}
-      - name: Test SSH Connection to Gitee
-        run: ssh -T git@gitee.com
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "a13854250594a@qq.com"
+          git config --global user.name "hai_ou1"
+
+      - name: Sync FoldCraftLauncher
+        env:
+          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+          GITEE_USERNAME: ${{ secrets.GITEE_USERNAME }}
+        run: |
+          git clone --mirror https://github.com/FCL-Team/FoldCraftLauncher.git
+          cd FoldCraftLauncher
+          git remote set-url --push origin git@gitee.com:hai_ou1/FoldCraftLauncher.git
+          git push --mirror origin
+
+      - name: Sync MobileGlues-release
+        env:
+          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+          GITEE_USERNAME: ${{ secrets.GITEE_USERNAME }}
+        run: |
+          git clone --mirror https://github.com/MobileGL-Dev/MobileGlues-release.git
+          cd MobileGlues-release
+          git remote set-url --push origin git@gitee.com:hai_ou1/MobileGlues-release.git
+          git push --mirror origin
