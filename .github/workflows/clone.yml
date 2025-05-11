@@ -1,41 +1,24 @@
-name: 同步仓库到Gitee
-
-on:
-  push:
-    paths-ignore:
-      - '*.md'
-  schedule:
-    - cron: '0 0 * * *'
+name: Test Gitee Access
+on: [push]
 
 jobs:
-  sync:
+  test-gitee-api:
     runs-on: ubuntu-latest
     steps:
-      - name: 配置SSH
-        uses: webfactory/ssh-agent@v0.9.1
-        with:
-          ssh-private-key: ${{ secrets.GITEE_PRIVATE_KEY }}
-      - name: 配置Git用户信息
+      - name: Test Gitee API with Token
         run: |
-          git config --global user.email "a13854250594a@qq.com"
-          git config --global user.name "hai_ou1"
-      - name: 同步FoldCraftLauncher仓库
-        env:
-          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
-          GITEE_USER: ${{ secrets.GITEE_USER }}
-        run: |
-          pwd
-          git clone --mirror https://github.com/FCL-Team/FoldCraftLauncher.git 2>&1
-          cd FoldCraftLauncher || exit 1
-          git remote set-url --push origin git@gitee.com:hai_ou1/FoldCraftLauncher.git
-          git push --mirror origin
-      - name: 同步MobileGlues - release仓库
-        env:
-          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
-          GITEE_USER: ${{ secrets.GITEE_USER }}
-        run: |
-          pwd
-          git clone --mirror https://github.com/MobileGL-Dev/MobileGlues-release.git 2>&1
-          cd MobileGlues-release || exit 1
-          git remote set-url --push origin git@gitee.com:hai_ou1/MobileGlues-release.git
-          git push --mirror origin
+          # 使用 curl 发送带认证的请求到 Gitee API（如获取用户信息）
+          # 格式：https://<token>@gitee.com/api/v5/user
+          # 或使用 --user 参数（更安全，避免令牌出现在命令历史）
+          curl --silent --request GET \
+               --url "https://gitee.com/api/v5/user" \
+               --user "x-access-token:${{ secrets.GITEE_TOKEN }}" \
+               --output response.json
+          # 检查响应状态码是否为 200（成功）
+          status_code=$(curl --write-out "%{http_code}" --silent --output /dev/null "https://gitee.com/api/v5/user" --user "x-access-token:${{ secrets.GITEE_TOKEN }}")
+          if [ "$status_code" -ne 200 ]; then
+            echo "Error: Gitee API access failed with status code $status_code"
+            exit 1
+          else
+            echo "Success: Gitee API accessible (Status Code: 200)"
+          fi
