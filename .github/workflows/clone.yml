@@ -66,8 +66,19 @@ jobs:
         run: mkdir -p ~/.ssh
       - name: Add Gitee host key to known_hosts
         run: ssh-keyscan -t rsa -H gitee.com >> ~/.ssh/known_hosts
+        run: |
+          if [ -s ~/.ssh/known_hosts ]; then
+            echo "Gitee host key added successfully. Known_hosts content: $(cat ~/.ssh/known_hosts)"
+          else
+            echo "Failed to add Gitee host key. known_hosts file is empty or does not exist."
+          fi
       - name: Test SSH Connection to Gitee
         run: |
           echo "${{ secrets.GITEE_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa_gitee
           chmod 600 ~/.ssh/id_rsa_gitee
+          if [ -s ~/.ssh/id_rsa_gitee ]; then
+            echo "SSH private key written successfully. Private key content: $(cat ~/.ssh/id_rsa_gitee)"
+          else
+            echo "Failed to write SSH private key. Private key file is empty or does not exist."
+          fi
           ssh -T git@gitee.com
