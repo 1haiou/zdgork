@@ -21,15 +21,18 @@ jobs:
           git config --global user.email "a13854250594a@qq.com"
           git config --global user.name "hai_ou1"
       - name: Add SSH Key for FoldCraftLauncher
-        uses: webfactory/ssh-agent@v0.5.5
+        uses: webfactory/ssh-agent@v0.9.1
         with:
           ssh-private-key: ${{ secrets.GITEE_PRIVATE_KEY }}
+      - name: Add GitHub Host Key for FoldCraftLauncher
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
       - name: Clone and Overwrite to Gitee for FoldCraftLauncher
         run: |
           git clone --mirror git@github.com:FCL-Team/FoldCraftLauncher.git
           cd FoldCraftLauncher.git
           git push --mirror --force git@gitee.com:hai_ou1/FoldCraftLauncher.git
-
   mirror-MobileGlues-release:
     runs-on: ubuntu-latest
     steps:
@@ -47,6 +50,10 @@ jobs:
         uses: webfactory/ssh-agent@v0.9.1
         with:
           ssh-private-key: ${{ secrets.GITEE_PRIVATE_KEY }}
+      - name: Add GitHub Host Key for MobileGlues-release
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
       - name: Clone and Overwrite to Gitee for MobileGlues-release
         run: |
           git clone --mirror git@github.com:MobileGL-Dev/MobileGlues-release.git
