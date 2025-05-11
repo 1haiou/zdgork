@@ -24,8 +24,9 @@ jobs:
           GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
           GITEE_USER: ${{ secrets.GITEE_USER }}
         run: |
-          git clone --mirror https://github.com/FCL-Team/FoldCraftLauncher.git
-          cd FoldCraftLauncher
+          pwd
+          git clone --mirror https://github.com/FCL-Team/FoldCraftLauncher.git 2>&1
+          cd FoldCraftLauncher || exit 1
           git remote set-url --push origin git@gitee.com:hai_ou1/FoldCraftLauncher.git
           git push --mirror origin
       - name: 同步MobileGlues - release仓库
@@ -33,7 +34,8 @@ jobs:
           GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
           GITEE_USER: ${{ secrets.GITEE_USER }}
         run: |
-          git clone --mirror https://github.com/MobileGL-Dev/MobileGlues-release.git
-          cd MobileGlues-release
+          pwd
+          git clone --mirror https://github.com/MobileGL-Dev/MobileGlues-release.git 2>&1
+          cd MobileGlues-release || exit 1
           git remote set-url --push origin git@gitee.com:hai_ou1/MobileGlues-release.git
           git push --mirror origin
