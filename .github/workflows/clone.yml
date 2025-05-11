@@ -16,9 +16,11 @@ jobs:
         run: echo "Host github.com\nHostname ssh.github.com\nPort 443" > ~/.ssh/config
       - name: Set config file permissions
         run: chmod 600 ~/.ssh/config
-      - name: Add GitHub Host Key
+      - name: Add GitHub host key to known_hosts
         run: |
-          ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
       - name: Checkout FoldCraftLauncher
         uses: actions/checkout@v3
         with:
@@ -48,9 +50,11 @@ jobs:
         run: echo "Host github.com\nHostname ssh.github.com\nPort 443" > ~/.ssh/config
       - name: Set config file permissions
         run: chmod 600 ~/.ssh/config
-      - name: Add GitHub Host Key
+      - name: Add GitHub host key to known_hosts
         run: |
-          ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
       - name: Checkout MobileGlues-release
         uses: actions/checkout@v3
         with:
