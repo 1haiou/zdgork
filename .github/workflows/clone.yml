@@ -11,66 +11,94 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Create .ssh directory
-        run: mkdir -p ~/.ssh
+        run: |
+          mkdir -p ~/.ssh
+          echo ".ssh 目录已创建"
       - name: Create config file
-        run: echo "Host github.com\nHostname ssh.github.com\nPort 443" > ~/.ssh/config
+        run: |
+          echo "Host github.com\nHostname ssh.github.com\nPort 443" > ~/.ssh/config
+          echo "config 文件已创建"
       - name: Set config file permissions
-        run: chmod 600 ~/.ssh/config
+        run: |
+          chmod 600 ~/.ssh/config
+          echo "config 文件权限已设置为 600"
       - name: Add GitHub host key to known_hosts
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
+          echo "已尝试添加 GitHub 主机密钥到 known_hosts，当前 known_hosts 内容为："
+          cat ~/.ssh/known_hosts
       - name: Checkout FoldCraftLauncher
         uses: actions/checkout@v3
         with:
           repository: FCL-Team/FoldCraftLauncher
           ref: main
           token: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "已检出 FoldCraftLauncher 仓库"
       - name: Configure Git for FoldCraftLauncher
         run: |
           git config --global user.email "a13854250594a@qq.com"
           git config --global user.name "hai_ou1"
+          echo "Git 已配置用户信息"
       - name: Add SSH Key for FoldCraftLauncher
         uses: webfactory/ssh-agent@v0.9.1
         with:
           ssh-private-key: ${{ secrets.GITEE_PRIVATE_KEY }}
+        run: echo "已尝试添加 SSH 密钥到代理"
       - name: Clone and Overwrite to Gitee for FoldCraftLauncher
         run: |
+          echo "开始克隆仓库"
           git clone --mirror git@github.com:FCL-Team/FoldCraftLauncher.git
           cd FoldCraftLauncher.git
+          echo "已进入克隆后的仓库目录，准备推送到 Gitee"
           git push --mirror --force git@gitee.com:hai_ou1/FoldCraftLauncher.git
+          echo "已尝试推送仓库到 Gitee"
 
   mirror-MobileGlues-release:
     runs-on: ubuntu-latest
     steps:
       - name: Create .ssh directory
-        run: mkdir -p ~/.ssh
+        run: |
+          mkdir -p ~/.ssh
+          echo ".ssh 目录已创建"
       - name: Create config file
-        run: echo "Host github.com\nHostname ssh.github.com\nPort 443" > ~/.ssh/config
+        run: |
+          echo "Host github.com\nHostname ssh.github.com\nPort 443" > ~/.ssh/config
+          echo "config 文件已添加"
       - name: Set config file permissions
-        run: chmod 600 ~/.ssh/config
+        run: |
+          chmod 600 ~/.ssh/config
+          echo "config 文件权限已设置为 600"
       - name: Add GitHub host key to known_hosts
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
+          echo "已尝试添加 GitHub 主机密钥到 known_hosts，当前 known_hosts 内容为："
+          cat ~/.ssh/known_hosts
       - name: Checkout MobileGlues-release
         uses: actions/checkout@v3
         with:
           repository: MobileGL-Dev/MobileGlues-release
           ref: main
           token: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "已检出 MobileGlues-release 仓库"
       - name: Configure Git for MobileGlues-release
         run: |
           git config --global user.email "a13854250594a@qq.com"
           git config --global user.name "hai_ou1"
+          echo "Git 已配置用户信息"
       - name: Add SSH Key for MobileGlues-release
         uses: webfactory/ssh-agent@v0.9.1
         with:
           ssh-private-key: ${{ secrets.GITEE_PRIVATE_KEY }}
+        run: echo "已尝试添加 SSH 密钥到代理"
       - name: Clone and Overwrite to Gitee for MobileGlues-release
         run: |
+          echo "开始克隆仓库"
           git clone --mirror git@github.com:MobileGL-Dev/MobileGlues-release.git
           cd MobileGlues-release.git
+          echo "已进入克隆后的仓库目录，准备推送到 Gitee"
           git push --mirror --force git@gitee.com:hai_ou1/MobileGlues-release.git
+          echo "已尝试推送仓库到 Gitee"
