@@ -2,23 +2,13 @@ name: Test Gitee Access
 on: [push]
 
 jobs:
-  test-gitee-api:
+  test-gitee-clone:
     runs-on: ubuntu-latest
     steps:
-      - name: Test Gitee API with Token
+      - name: Clone Gitee Repository
         run: |
-          # 使用 curl 发送带认证的请求到 Gitee API（如获取用户信息）
-          # 格式：https://<token>@gitee.com/api/v5/user
-          # 或使用 --user 参数（更安全，避免令牌出现在命令历史）
-          curl --silent --request GET \
-               --url "https://gitee.com/api/v5/user" \
-               --user "x-access-token:${{ secrets.GITEE_TOKEN }}" \
-               --output response.json
-          # 检查响应状态码是否为 200（成功）
-          status_code=$(curl --write-out "%{http_code}" --silent --output /dev/null "https://gitee.com/api/v5/user" --user "x-access-token:${{ secrets.GITEE_TOKEN }}")
-          if [ "$status_code" -ne 200 ]; then
-            echo "Error: Gitee API access failed with status code $status_code"
-            exit 1
-          else
-            echo "Success: Gitee API accessible (Status Code: 200)"
-          fi
+          # 构造带令牌的 HTTPS 仓库 URL（格式：https://<token>@gitee.com/<owner>/<repo>.git）
+          repo_url="https://${{ secrets.GITEE_TOKEN }}@gitee.com/your-gitee-username/your-repo-name.git"
+          git clone $repo_url
+          # 或使用更安全的 --config 参数（避免令牌出现在命令历史）
+          # git clone https://x-access-token:${{ secrets.GITEE_TOKEN }}@gitee.com/your-gitee-username/your-repo-name.git
