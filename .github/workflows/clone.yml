@@ -62,11 +62,12 @@ jobs:
   test-ssh-key:
     runs-on: ubuntu-latest
     steps:
+      - name: Create .ssh directory if not exists
+        run: mkdir -p ~/.ssh
       - name: Add Gitee host key to known_hosts
         run: ssh-keyscan -t rsa -H gitee.com >> ~/.ssh/known_hosts
       - name: Test SSH Connection to Gitee
         run: |
-          mkdir -p ~/.ssh
           echo "${{ secrets.GITEE_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa_gitee
           chmod 600 ~/.ssh/id_rsa_gitee
           ssh -T git@gitee.com
