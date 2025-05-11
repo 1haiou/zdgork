@@ -1,49 +1,37 @@
-name: Sync Repositories to Gitee
+name: 同步仓库到Gitee
 
 on:
   push:
     paths-ignore:
-      - README.md
-      - README_EN.md
-      - README_RU.md
-      - README_CHT.md
-      - README_CN.md
-      - README_JP.md
+      - '*.md'
   schedule:
-    - cron: '0 0 * * *' # 每天凌晨执行一次，可根据需求调整
+    - cron: '0 0 * * *'
 
 jobs:
-  sync-repositories:
+  sync:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup SSH
+      - name: 配置SSH
         uses: webfactory/ssh-agent@v0.9.1
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Configure Git
+          ssh-private-key: ${{ secrets.GITEE_PRIVATE_KEY }}
+      - name: 配置Git用户信息
         run: |
           git config --global user.email "a13854250594a@qq.com"
           git config --global user.name "hai_ou1"
-
-      - name: Sync FoldCraftLauncher
+      - name: 同步FoldCraftLauncher仓库
         env:
           GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
-          GITEE_USERNAME: ${{ secrets.GITEE_USERNAME }}
+          GITEE_USER: ${{ secrets.GITEE_USER }}
         run: |
           git clone --mirror https://github.com/FCL-Team/FoldCraftLauncher.git
           cd FoldCraftLauncher
           git remote set-url --push origin git@gitee.com:hai_ou1/FoldCraftLauncher.git
           git push --mirror origin
-
-      - name: Sync MobileGlues-release
+      - name: 同步MobileGlues - release仓库
         env:
           GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
-          GITEE_USERNAME: ${{ secrets.GITEE_USERNAME }}
+          GITEE_USER: ${{ secrets.GITEE_USER }}
         run: |
           git clone --mirror https://github.com/MobileGL-Dev/MobileGlues-release.git
           cd MobileGlues-release
